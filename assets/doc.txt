@@ -1,0 +1,36 @@
+[
+  {
+    "id": 3,
+    "type": "Constant",
+    "line": 152,
+    "column": 5,
+    "valueType": "integer",
+    "value": "8"
+  },
+  {
+    "id": 4,
+    "type": "Constant",
+    "line": 153,
+    "column": 10,
+    "valueType": "integer",
+    "value": "3"
+  },
+  {
+    "id": 2,
+    "type": "Parallel",
+    "complex": 0,
+    "children": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": 1,
+    "type": "Sequential",
+    "complex": 1,
+    "children": [
+      1,
+      4
+    ]
+  }
+]
