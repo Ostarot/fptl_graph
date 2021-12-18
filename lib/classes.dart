@@ -36,6 +36,7 @@ class FPTLNode {
     String lnCn = line != null && column != null ? '\nLine: $line Column: $column' : '';
 
     str = "$type$fromTo Id=$id"
+        "${name == null ? '' : '\n$name'}"
         "${valueType == null ? '' : '\n$valueType'}"
         "${value == null ? '' : '\n$value'}"
         "$lnCn"

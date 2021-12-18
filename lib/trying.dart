@@ -46,7 +46,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
                     graph: graph,
                     // algorithm: FruchtermanReingoldAlgorithm(),
                     // algorithm: BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
-                    algorithm: SugiyamaAlgorithm(builder),
+                    algorithm: SugiyamaAlgorithm(builder2),
                     paint: Paint()
                       ..color = Colors.green
                       ..strokeWidth = 1
@@ -54,7 +54,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
                     builder: (Node node) {
                       // I can decide what widget should be shown here based on the id
                       var a = node.key!.value as int;
-                      return rectangleWidget(smth[a-1]);
+                      return rectangleWidget(smth[a]);
                       // if ([Func, Sequential, Parallel, Scheme, Condition].contains(obj.runtimeType) && obj.complex) {}
                     },
                   )),
@@ -86,8 +86,8 @@ class _TreeViewPageState extends State<TreeViewPage> {
   }
 
   final Graph graph = Graph()..isTree = true; //true для walker
-  // BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
-  SugiyamaConfiguration builder = SugiyamaConfiguration();
+  BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
+  SugiyamaConfiguration builder2 = SugiyamaConfiguration();
 
   @override
   void initState() {
@@ -108,10 +108,10 @@ class _TreeViewPageState extends State<TreeViewPage> {
     //   ..subtreeSeparation = (100)
     //   ..orientation = (BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM);
 
-    // builder
-    //   ..levelSeparation = (50)
-    //   ..nodeSeparation = (50)
-    //   ..iterations = (4)
-    //   ..orientation = (SugiyamaConfiguration.ORIENTATION_TOP_BOTTOM);
+    builder2
+      ..levelSeparation = (50)
+      ..nodeSeparation = (50)
+      ..iterations = (4)
+      ..orientation = (SugiyamaConfiguration.ORIENTATION_TOP_BOTTOM);
   }
 }
