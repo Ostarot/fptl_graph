@@ -31,7 +31,7 @@ Future<String> loadAsset() async {
 
   smth = (json.decode(doc) as List)
       .map((e) => FPTLNode(e))
-      .toList(growable: false);
+      .toList();
   smth.sort((a, b) => a.id.compareTo(b.id));
   return doc;
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
+import 'classes.dart';
 import 'main.dart';
 
 class MyApp extends StatelessWidget {
@@ -54,7 +55,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
                     builder: (Node node) {
                       // I can decide what widget should be shown here based on the id
                       var a = node.key!.value as int;
-                      return rectangleWidget(smth[a]);
+                      return nodeWidget(smth[a]);
                       // if ([Func, Sequential, Parallel, Scheme, Condition].contains(obj.runtimeType) && obj.complex) {}
                     },
                   )),
@@ -65,7 +66,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
   //Random r = Random();
 
-  Widget rectangleWidget(var a) { //int a
+  Widget nodeWidget(FPTLNode a) { //int a
     return InkWell(
       onTap: () {
         print('clicked');
@@ -74,18 +75,18 @@ class _TreeViewPageState extends State<TreeViewPage> {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
-            shape: BoxShape.rectangle,
+            shape: a.type == 'Ref' ? BoxShape.circle : BoxShape.rectangle,
             border: Border.all(
               color: a.complex ? Colors.red : Colors.black,
               width: 1,
             ),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: a.type == 'Ref' ? null : BorderRadius.circular(4),
           ),
           child: Text(a.str)), //прописать Node
     );
   }
 
-  final Graph graph = Graph()..isTree = true; //true для walker
+  final Graph graph = Graph()..isTree = false; //true для walker
   BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
   SugiyamaConfiguration builder2 = SugiyamaConfiguration();
 
@@ -95,9 +96,16 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
     for (var element in smth) {
       for (var child in element.children??[]) {
-        if (element.id != child) {
+        if (element.id == child) {
+          continue;
+        } else /*if (element.id < child)*/ {
           graph.addEdge(Node.Id(element.id), Node.Id(child));
-        }
+        } /*else {
+          var node = FPTLNode({"id":child,"type":"Ref"});
+          node.complex = smth[child].complex;
+          smth.add(node);
+          graph.addEdge(Node.Id(element.id), Node.Id(smth.length - 1));
+        }*/
       }
     }
 
