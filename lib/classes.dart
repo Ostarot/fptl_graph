@@ -1,91 +1,45 @@
 //{Constant, Parallel, Take, Function, Sequential, Scheme, Condition}
 
-class Constant {
+class FPTLNode {
 
-  int id, line, column;
-  String type, valueType;
-  String value; //сделать double????
+  late int id;
+  late String type;
+  late int? from;
+  late int? to;
+  late String? name;
+  late String? valueType;
+  late String? value;
+  late int? line;
+  late int? column;
+  late bool complex;
+  late List? children;
 
-  Constant(this.id, this.type, this.line, this.column, this.valueType, this.value);
+  late String str;
 
-  @override
-  String toString(){
-    return 'id=$id $type $value';
-  }
-}
+  FPTLNode(node) {
+    id = node['id'];
+    type = node['type'];
+    from = node['from'];
+    to = node['to'];
+    name = node['name'];
+    valueType = node['valueType'];
+    value = node['value'];
+    line = node['line'];
+    column = node['column'];
+    complex = node['complex'] == 1;
+    children = node['children'];
 
-class Parallel {
-  int id, complex; //complex {0,1}
-  String type;
-  List children; //2 всегда, один из них - свой ид
+    String fromTo = from == null
+        ? (to == null ? "" : "[, $to]")
+        : (to == null ? "[$from,]" : "[$from, $to]");
 
-  Parallel(this.id, this.type, this.complex, this.children);
+    String lnCn = line != null && column != null ? '\nLine: $line Column: $column' : '';
 
-  @override
-  String toString(){
-    return 'id=$id $type $complex\n $children';
-  }
-}
-
-class Take {
-  int id, line, column, from, to;
-  String type;
-
-  Take(this.id, this.type, this.line, this.column, this.from, this.to);
-
-  @override
-  String toString(){
-    return 'id=$id $type';
-  }
-}
-
-class Function1 {
-  int id, line, column, complex;
-  String type, name;
-
-  Function1(this.id, this.type, this.line, this.column, this.complex, this.name);
-
-  @override
-  String toString(){
-    return 'id=$id $type $complex $name';
-  }
-}
-
-class Sequential {
-  int id, complex; //complex {0,1}
-  String type;
-  List children; //list?? length=1
-
-  Sequential(this.id, this.type, this.complex, this.children);
-
-  @override
-  String toString(){
-    return 'id=$id $type $complex\n $children';
-  }
-}
-
-class Scheme {
-  int id, complex;
-  String type, name;
-  List children;
-
-  Scheme(this.id, this.type, this.complex, this.name, this.children);
-
-  @override
-  String toString(){
-    return 'id=$id $type $complex\n $children';
-  }
-}
-
-class Condition {
-  int id, complex; //complex {0,1}
-  String type;
-  List children; //list?? length=3
-
-  Condition(this.id, this.type, this.complex, this.children);
-
-  @override
-  String toString(){
-    return 'id=$id $type $complex\n $children';
+    str = "$type$fromTo Id=$id"
+        "${valueType == null ? '' : '\n$valueType'}"
+        "${value == null ? '' : '\n$value'}"
+        "$lnCn"
+        "${children == null ? '' : '\n$children'}"
+    ;
   }
 }
