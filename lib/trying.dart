@@ -1,19 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import "dart:io";
-import 'dart:developer';
-import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart' show WidgetsFlutterBinding;
-import "dart:convert";
+import 'package:graphview/GraphView.dart';
 
 import 'classes.dart';
 import 'main.dart';
-
-import 'package:graphview/GraphView.dart';
-
 
 class MyApp extends StatelessWidget {
   final String doc;
@@ -47,64 +36,6 @@ class _TreeViewPageState extends State<TreeViewPage> {
         body: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Wrap(
-              children: [
-                // Container(
-                //   width: 100,
-                //   child: TextFormField(
-                //     initialValue: builder.siblingSeparation.toString(),
-                //     decoration: InputDecoration(labelText: "Sibling Separation"),
-                //     onChanged: (text) {
-                //       builder.siblingSeparation = int.tryParse(text) ?? 100;
-                //       this.setState(() {});
-                //     },
-                //   ),
-                // ),
-                // Container(
-                //   width: 100,
-                //   child: TextFormField(
-                //     initialValue: builder.levelSeparation.toString(),
-                //     decoration: InputDecoration(labelText: "Level Separation"),
-                //     onChanged: (text) {
-                //       builder.levelSeparation = int.tryParse(text) ?? 100;
-                //       this.setState(() {});
-                //     },
-                //   ),
-                // ),
-                // Container(
-                //   width: 100,
-                //   child: TextFormField(
-                //     initialValue: builder.subtreeSeparation.toString(),
-                //     decoration: InputDecoration(labelText: "Subtree separation"),
-                //     onChanged: (text) {
-                //       builder.subtreeSeparation = int.tryParse(text) ?? 100;
-                //       this.setState(() {});
-                //     },
-                //   ),
-                // ),
-                // Container(
-                //   width: 100,
-                //   child: TextFormField(
-                //     initialValue: builder.orientation.toString(),
-                //     decoration: InputDecoration(labelText: "Orientation"),
-                //     onChanged: (text) {
-                //       builder.orientation = int.tryParse(text) ?? 100;
-                //       this.setState(() {});
-                //     },
-                //   ),
-                // ),
-                // ElevatedButton(
-                //   onPressed: () {
-                //     final node12 = Node.Id(r.nextInt(100));
-                //     var edge = graph.getNodeAtPosition(r.nextInt(graph.nodeCount()));
-                //     print(edge);
-                //     graph.addEdge(edge, node12);
-                //     setState(() {});
-                //   },
-                //   child: Text("Add"),
-                // )
-              ],
-            ),
             Expanded(
               child: InteractiveViewer(
                   constrained: false,
@@ -114,22 +45,18 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
                   child: GraphView(
                     graph: graph,
-                    algorithm: FruchtermanReingoldAlgorithm(),  //BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),    SugiyamaAlgorithm(builder),
+                    // algorithm: FruchtermanReingoldAlgorithm(),
+                    // algorithm: BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
+                    algorithm: SugiyamaAlgorithm(builder2),
                     paint: Paint()
                       ..color = Colors.green
                       ..strokeWidth = 1
                       ..style = PaintingStyle.stroke,
                     builder: (Node node) {
                       // I can decide what widget should be shown here based on the id
-                      var a = node.key!.value as int; // as int
-                      //return rectangleWidget(a);
-                      var obj = smth[a-1];
-                      if (['Sequential', 'Parallel', 'Scheme', 'Condition'].contains(obj.type) && obj.children.contains(a)) {
-                          return rectangleWidgetBoldBorder(obj);
-                        }
-                      else {
-                        return rectangleWidget(obj);
-                      }
+                      var a = node.key!.value as int;
+                      return nodeWidget(smth[a]);
+                      // if ([Func, Sequential, Parallel, Scheme, Condition].contains(obj.runtimeType) && obj.complex) {}
                     },
                   )),
             ),
@@ -139,99 +66,48 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
   //Random r = Random();
 
-  Widget rectangleWidget(var a) { //int a
+  Widget nodeWidget(FPTLNode a) { //int a
     return InkWell(
       onTap: () {
         print('clicked');
       },
       child: Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(4),
-            boxShadow: [
-              BoxShadow(color: Colors.black, spreadRadius: 1), //BoxShadow(color: Colors.blue[100], spreadRadius: 1), менять радиус для рекурсии
-            ],
+            color: Colors.white,
+            shape: a.type == 'Ref' ? BoxShape.circle : BoxShape.rectangle,
+            border: Border.all(
+              color: a.complex ? Colors.red : Colors.black,
+              width: 1,
+            ),
+            borderRadius: a.type == 'Ref' ? null : BorderRadius.circular(4),
           ),
-          child: Text('${a.toString()}')), //прописать Node
+          child: Text(a.str)), //прописать Node
     );
-  }
-
-  Widget rectangleWidgetBoldBorder(var a) { //int a
-    return InkWell(
-      onTap: () {
-        print('clicked');
-      },
-      child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(4),
-            boxShadow: [
-              BoxShadow(color: Colors.black, spreadRadius: 5), //BoxShadow(color: Colors.blue[100], spreadRadius: 1), менять радиус для рекурсии
-            ],
-          ),
-          child: Text('${a.toString()}')), //прописать Node
-    );
-  }
-
-  Widget circleWidget(var a) { //int a
-    return Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.circle,
-            //borderRadius: BorderRadius.circular(4),
-            boxShadow: [
-              BoxShadow(color: Colors.black, spreadRadius: 10), //BoxShadow(color: Colors.blue[100], spreadRadius: 1),
-            ],
-          ),
-          child: Text('${a.toString()}')); //прописать Node
   }
 
   final Graph graph = Graph()..isTree = false; //true для walker
-  //BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
-
-  //SugiyamaConfiguration builder = SugiyamaConfiguration();
+  BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
+  SugiyamaConfiguration builder2 = SugiyamaConfiguration();
 
   @override
   void initState() {
+    super.initState();
 
-    for (int i = 0; i < smth.length; i++) {
-      if (['Sequential', 'Parallel', 'Scheme', 'Condition'].contains(smth[i].type)) {
-        for (var child in smth[i].children) {
-          if (smth[i].id != child){
-            graph.addEdge(Node.Id(smth[i].id), Node.Id(child));
-          }
-        }
+    for (var element in smth) {
+      for (var child in element.children??[]) {
+        if (element.id == child) {
+          continue;
+        } else /*if (element.id < child)*/ {
+          graph.addEdge(Node.Id(element.id), Node.Id(child));
+        } /*else {
+          var node = FPTLNode({"id":child,"type":"Ref"});
+          node.complex = smth[child].complex;
+          smth.add(node);
+          graph.addEdge(Node.Id(element.id), Node.Id(smth.length - 1));
+        }*/
       }
     }
-
-
-    // final node1 = Node.Id(1);
-    // final node2 = Node.Id(2);
-    // final node3 = Node.Id(3);
-    // final node4 = Node.Id(4);
-    // final node5 = Node.Id(5);
-    // final node6 = Node.Id(6);
-    // final node8 = Node.Id(7);
-    // final node7 = Node.Id(8);
-    // final node9 = Node.Id(9);
-    // final node10 = Node.Id(10);
-    // final node11 = Node.Id(11);
-    // final node12 = Node.Id(12);
-    //
-    // graph.addEdge(node1, node2);
-    // graph.addEdge(node1, node3, paint: Paint()..color = Colors.red);
-    // graph.addEdge(node1, node4, paint: Paint()..color = Colors.blue);
-    // graph.addEdge(node2, node5);
-    // graph.addEdge(node2, node6);
-    // graph.addEdge(node6, node7, paint: Paint()..color = Colors.red);
-    // graph.addEdge(node6, node8, paint: Paint()..color = Colors.red);
-    // graph.addEdge(node4, node9);
-    // graph.addEdge(node4, node10, paint: Paint()..color = Colors.black);
-    // graph.addEdge(node4, node11, paint: Paint()..color = Colors.red);
-    // graph.addEdge(node11, node12);
 
 
     // builder
@@ -240,10 +116,10 @@ class _TreeViewPageState extends State<TreeViewPage> {
     //   ..subtreeSeparation = (100)
     //   ..orientation = (BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM);
 
-    // builder
-    //   ..levelSeparation = (250)
-    //   ..nodeSeparation = (100)
-    //   ..iterations = (4)
-    //   ..orientation = (SugiyamaConfiguration.ORIENTATION_TOP_BOTTOM);
+    builder2
+      ..levelSeparation = (50)
+      ..nodeSeparation = (50)
+      ..iterations = (4)
+      ..orientation = (SugiyamaConfiguration.ORIENTATION_TOP_BOTTOM);
   }
 }
